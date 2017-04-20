@@ -10,3 +10,4 @@ void strtokCmd(char *str, vector<char*>& vec, const char *sep);
 void transCmd(vector<char*>& vecin, vector<coordinate>& vecout);
 void initial();
 void clear();
+void normal_direction(vector<coordinate>& vec_role);

@@ -53,10 +53,42 @@ int recvIni(char *str)
 
 int recvInf(char *str)
 {
-    //接收INF指令 
+	//接收INF指令
 
-    return 0;
+	if (myRole == "POL")
+	{
+		normal_direction(vec_police);
+	}
+	else if (myRole == "THI")
+	{
+		normal_direction(vec_thief);
+	}
+
+	string buf = "MOV[";
+	int i = 0;
+	if (myRole == "POL")
+	{
+		buf += to_string(Qp) + "](";
+		for (i = 0; i < Qp; i++) {
+			buf += vec_police.at(i).id + ","
+				+ vec_police.at(i).move + ";";
+		}
+		buf += ")";
+	}
+	else if (myRole == "THI")
+	{
+		buf += to_string(Qt) + "](";
+		for (i = 0; i < Qt; i++) {
+			buf += vec_thief.at(i).id + ","
+				+ vec_thief.at(i).move + ";";
+		}
+		buf += ")";
+	}
+	char* buff = buf.c_str;
+	sendCmd(buff);
+	return 0;
 }
+
 
 //接收到END指令，退出进程
 int recvEnd(char *str)
@@ -160,5 +192,103 @@ void clear()
 	vec_eye.clear();
 	vec_map.clear();
 	vec_num.clear();
+}
+
+void normal_direction(vector<coordinate>& vec_role) {
+	int rand_direction = rand() % 4;
+	for (int i = 0; i < vec_role.size; i++) {
+		for (int k = 0; k < vec_hinder.size; k++) {
+			while (true) {
+				if (rand_direction == 0) {
+					if ((vec_hinder.at(k).y - vec_role.at(i).y) == 0)
+					{
+						vec_role.at(i).move = "B";
+						break;
+					}
+					else if ((vec_hinder.at(k).x - vec_role.at(i).x) == 0)
+					{
+						vec_role.at(i).move = "D";
+						break;
+					}
+					else if ((vec_role.at(k).y - vec_hinder.at(i).y) == 0)
+					{
+						vec_role.at(i).move = "N";
+						break;
+					}
+					else if ((vec_role.at(k).x - vec_hinder.at(i).x) == 0)
+					{
+						vec_role.at(i).move = "X";
+						break;
+					}
+				}
+				else if (rand_direction == 1) {
+					if ((vec_hinder.at(k).x - vec_role.at(i).x) == 0)
+					{
+						vec_role.at(i).move = "D";
+						break;
+					}
+					else if ((vec_role.at(k).y - vec_hinder.at(i).y) == 0)
+					{
+						vec_role.at(i).move = "N";
+						break;
+					}
+					else if ((vec_role.at(k).x - vec_hinder.at(i).x) == 0)
+					{
+						vec_role.at(i).move = "X";
+						break;
+					}
+					else if ((vec_hinder.at(k).y - vec_role.at(i).y) == 0)
+					{
+						vec_role.at(i).move = "B";
+						break;
+					}
+				}
+				else if (rand_direction == 2) {
+					if ((vec_role.at(k).y - vec_hinder.at(i).y) == 0)
+					{
+						vec_role.at(i).move = "N";
+						break;
+					}
+					else if ((vec_role.at(k).x - vec_hinder.at(i).x) == 0)
+					{
+						vec_role.at(i).move = "X";
+						break;
+					}
+					else if ((vec_hinder.at(k).y - vec_role.at(i).y) == 0)
+					{
+						vec_role.at(i).move = "B";
+						break;
+					}
+					else if ((vec_hinder.at(k).x - vec_role.at(i).x) == 0)
+					{
+						vec_role.at(i).move = "D";
+						break;
+					}
+				}
+				else if (rand_direction == 3) {
+					if ((vec_role.at(k).x - vec_hinder.at(i).x) == 0)
+					{
+						vec_role.at(i).move = "X";
+						break;
+					}
+					else if ((vec_hinder.at(k).y - vec_role.at(i).y) == 0)
+					{
+						vec_role.at(i).move = "B";
+						break;
+					}
+					else if ((vec_hinder.at(k).x - vec_role.at(i).x) == 0)
+					{
+						vec_role.at(i).move = "D";
+						break;
+					}
+					else if ((vec_role.at(k).y - vec_hinder.at(i).y) == 0)
+					{
+						vec_role.at(i).move = "N";
+						break;
+					}
+				}
+			}
+		}
+	}
 }
 
