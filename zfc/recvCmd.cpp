@@ -14,6 +14,7 @@ vector<char*> vec_num;//警察和小偷数量
 vector<char*> vec_coordinate;//坐标
 vector<coordinate> vec_police;//警察
 vector<coordinate> vec_thief;//小偷
+vector<bar> vec_hinder;//障碍物
 typedef struct coordinate
 {
 	string id;
@@ -21,8 +22,8 @@ typedef struct coordinate
 	int y;
 	char* move;
 }police, thief;
-police p = { "0",0,0,"T" };
-thief t = { "0",0,0,"T" };
+police p = { "0",0,0,"T" };//用于初始化
+thief t = { "0",0,0,"T" };//用于初始化
 struct bar
 {
 	int x;
@@ -91,10 +92,10 @@ int recvCmd(char *str)
 void recvIniPol(char *str)
 {
 	strtokCmd(str, vec_string, "[]<>()");
-	strtokCmd(vec_string[1], vec_map, ",");
-	strtokCmd(vec_string[2], vec_eye, ",");
-	strtokCmd(vec_string[3], vec_num, ",");
-	strtokCmd(vec_string[4], vec_coordinate, ",;");
+	strtokCmd(vec_string.at(1), vec_map, ",");
+	strtokCmd(vec_string.at(2), vec_eye, ",");
+	strtokCmd(vec_string.at(3), vec_num, ",");
+	strtokCmd(vec_string.at(4), vec_coordinate, ",;");
 	initial();
 	transCmd(vec_coordinate, vec_police);
 	clear();
@@ -103,10 +104,10 @@ void recvIniPol(char *str)
 void recvIniThi(char *str)
 {
 	strtokCmd(str, vec_string, "[]<>()");
-	strtokCmd(vec_string[1], vec_map, ",");
-	strtokCmd(vec_string[2], vec_eye, ",");
-	strtokCmd(vec_string[3], vec_num, ",");
-	strtokCmd(vec_string[4], vec_coordinate, ",;");
+	strtokCmd(vec_string.at(1), vec_map, ",");
+	strtokCmd(vec_string.at(2), vec_eye, ",");
+	strtokCmd(vec_string.at(3), vec_num, ",");
+	strtokCmd(vec_string.at(4), vec_coordinate, ",;");
 	initial();
 	transCmd(vec_coordinate, vec_thief);
 	clear();
@@ -121,14 +122,7 @@ void strtokCmd(char *str, vector<char*>& vec, const char *sep)
 		vec.push_back(p);
 		p = strtok(NULL, sep);
 	}
-}
-
-void printvec(vector<char*>& vec)
-{
-	for (int i = 0; i<vec.size(); i++)
-	{
-		cout << vec[i] << endl;
-	}
+	delete p;
 }
 
 void transCmd(vector<char*>& vecin, vector<coordinate>& vecout)
@@ -143,12 +137,12 @@ void transCmd(vector<char*>& vecin, vector<coordinate>& vecout)
 
 void initial()
 {
-	map_x = atoi(vec_map[0]);
-	map_y = atoi(vec_map[1]);
-	m = atoi(vec_eye[0]);
-	n = atoi(vec_eye[1]);
-	Qp = atoi(vec_num[0]);
-	Qt = atoi(vec_num[1]);
+	map_x = atoi(vec_map.at(0));
+	map_y = atoi(vec_map.at(1));
+	m = atoi(vec_eye.at(0));
+	n = atoi(vec_eye.at(1));
+	Qp = atoi(vec_num.at(0));
+	Qt = atoi(vec_num.at(1));
 	for (int i = 0; i<Qp; i++)
 	{
 		vec_police.push_back(p);
