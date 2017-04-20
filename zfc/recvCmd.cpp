@@ -7,18 +7,6 @@ int map_x, map_y;//地图宽高
 int Qp, Qt;//警察和小偷数量
 int m, n;//视距
 int nround;//轮数
-typedef struct coordinate
-{
-	string id;
-	int x;
-	int y;
-	char* move;
-}police, thief;
-struct bar
-{
-	int x;
-	int y;
-};
 vector<char*> vec_string;//INI或INF指令第一次分割
 vector<char*> vec_map;//地图大小
 vector<char*> vec_eye;//视距
@@ -26,8 +14,21 @@ vector<char*> vec_num;//警察和小偷数量
 vector<char*> vec_coordinate;//坐标
 vector<coordinate> vec_police;//警察
 vector<coordinate> vec_thief;//小偷
+typedef struct coordinate
+{
+	string id;
+	int x;
+	int y;
+	char* move;
+}police, thief;
+police p = { "0",0,0,"T" };
+thief t = { "0",0,0,"T" };
+struct bar
+{
+	int x;
+	int y;
+};
 
-police a = { "0",0,0,"T" };
 
 //函数实现
 int recvIni(char *str)
@@ -35,13 +36,14 @@ int recvIni(char *str)
     //接收初始化指令处理
 	if (myRole == "POL")
 	{
-		recvIniPol(str);
+		recvIniPol(str); 
 	}
 	else if (myRole == "THI")
 	{
 		recvIniThi(str);
+		cout << vec_thief.at(0).x;
 	}
-	else
+	else         //do nothing
 	{
 		;
 	}
@@ -50,7 +52,8 @@ int recvIni(char *str)
 
 int recvInf(char *str)
 {
-    //接收INF指令    
+    //接收INF指令 
+
     return 0;
 }
 
@@ -87,12 +90,26 @@ int recvCmd(char *str)
 
 void recvIniPol(char *str)
 {
-	
+	strtokCmd(str, vec_string, "[]<>()");
+	strtokCmd(vec_string[1], vec_map, ",");
+	strtokCmd(vec_string[2], vec_eye, ",");
+	strtokCmd(vec_string[3], vec_num, ",");
+	strtokCmd(vec_string[4], vec_coordinate, ",;");
+	initial();
+	transCmd(vec_coordinate, vec_police);
+	clear();
 }
 
 void recvIniThi(char *str)
 {
-
+	strtokCmd(str, vec_string, "[]<>()");
+	strtokCmd(vec_string[1], vec_map, ",");
+	strtokCmd(vec_string[2], vec_eye, ",");
+	strtokCmd(vec_string[3], vec_num, ",");
+	strtokCmd(vec_string[4], vec_coordinate, ",;");
+	initial();
+	transCmd(vec_coordinate, vec_thief);
+	clear();
 }
 
 void strtokCmd(char *str, vector<char*>& vec, const char *sep)
@@ -114,7 +131,7 @@ void printvec(vector<char*>& vec)
 	}
 }
 
-void transPOL(vector<char*>& vecin, vector<coordinate>& vecout)
+void transCmd(vector<char*>& vecin, vector<coordinate>& vecout)
 {
 	for (int i = 0, j = 0; i<vecin.size(); i = i + 3, j++)
 	{
@@ -134,7 +151,20 @@ void initial()
 	Qt = atoi(vec_num[1]);
 	for (int i = 0; i<Qp; i++)
 	{
-		vec_police.push_back(a);
+		vec_police.push_back(p);
 	}
+	for (int i = 0; i<Qt; i++)
+	{
+		vec_thief.push_back(t);
+	}
+}
+
+void clear()
+{
+	vec_string.clear();
+	vec_coordinate.clear();
+	vec_eye.clear();
+	vec_map.clear();
+	vec_num.clear();
 }
 
