@@ -2,6 +2,7 @@
 #include "zfc.h"
 #include "recvCmd.h"
 
+string test = "test";
 //全局变量
 int map_x, map_y;//地图宽高
 int Qp, Qt;//警察和小偷数量
@@ -12,6 +13,9 @@ vector<char*> vec_map;//地图大小
 vector<char*> vec_eye;//视距
 vector<char*> vec_num;//警察和小偷数量
 vector<char*> vec_coordinate;//坐标
+vector<char*> vec_hinderone;//障碍物
+vector<char*> vec_hinders;
+vector<char*> vec_temp;
 vector<coordinate> vec_police;//警察
 vector<coordinate> vec_thief;//小偷
 vector<bar> vec_hinder;//障碍物
@@ -29,7 +33,7 @@ struct bar
 	int x;
 	int y;
 };
-
+bar b = { 0,0 };
 
 //函数实现
 int recvIni(char *str)
@@ -42,11 +46,11 @@ int recvIni(char *str)
 	else if (myRole == "THI")
 	{
 		recvIniThi(str);
-		cout << vec_thief.at(0).x;
+		//cout << vec_thief.at(0).y;
 	}
 	else         //do nothing
 	{
-		;
+		
 	}
     return 0;
 }
@@ -54,11 +58,13 @@ int recvIni(char *str)
 int recvInf(char *str)
 {
 	//接收INF指令
-
+	recv_messegeInf(str);
+	//cout << vec_thief.at(0).y;
 	if (myRole == "POL")
 	{
 		normal_direction(vec_police);
 	}
+
 	else if (myRole == "THI")
 	{
 		normal_direction(vec_thief);
@@ -68,7 +74,7 @@ int recvInf(char *str)
 	int i = 0;
 	if (myRole == "POL")
 	{
-		buf += to_string(Qp) + "](";
+		buf += to_string(nround) + "](";
 		for (i = 0; i < Qp; i++) {
 			buf += vec_police.at(i).id + ","
 				+ vec_police.at(i).move + ";";
@@ -77,15 +83,17 @@ int recvInf(char *str)
 	}
 	else if (myRole == "THI")
 	{
-		buf += to_string(Qt) + "](";
+		buf += to_string(nround) + "](";
 		for (i = 0; i < Qt; i++) {
 			buf += vec_thief.at(i).id + ","
 				+ vec_thief.at(i).move + ";";
 		}
 		buf += ")";
 	}
-	char* buff = buf.c_str;
-	sendCmd(buff);
+	char *p1 = new char[buf.size() + 1];
+	strcpy(p1, buf.c_str());
+	sendCmd(p1);
+	delete[] p1;
 	return 0;
 }
 
@@ -147,14 +155,14 @@ void recvIniThi(char *str)
 
 void strtokCmd(char *str, vector<char*>& vec, const char *sep)
 {
-	char *p;
-	p = strtok(str, sep);
-	while (p)
+	char *p2;
+	p2 = strtok(str, sep);
+	while (p2)
 	{
-		vec.push_back(p);
-		p = strtok(NULL, sep);
+		vec.push_back(p2);
+		p2 = strtok(NULL, sep);
 	}
-	delete p;
+	delete [] p2;
 }
 
 void transCmd(vector<char*>& vecin, vector<coordinate>& vecout)
@@ -192,96 +200,99 @@ void clear()
 	vec_eye.clear();
 	vec_map.clear();
 	vec_num.clear();
+	vec_hinderone.clear();
+	vec_hinders.clear();
+	vec_temp.clear();
 }
 
 void normal_direction(vector<coordinate>& vec_role) {
-	int rand_direction = rand() % 4;
-	for (int i = 0; i < vec_role.size; i++) {
-		for (int k = 0; k < vec_hinder.size; k++) {
+	for (int i = 0; i < vec_role.size(); i++) {
+		int rand_direction = rand() % 4;
+		for (int k = 0; k < vec_hinder.size(); k++) {
 			while (true) {
 				if (rand_direction == 0) {
-					if ((vec_hinder.at(k).y - vec_role.at(i).y) == 0)
+					if ((vec_hinder.at(k).y - vec_role.at(i).y) != 1)
 					{
 						vec_role.at(i).move = "B";
 						break;
 					}
-					else if ((vec_hinder.at(k).x - vec_role.at(i).x) == 0)
+					else if ((vec_hinder.at(k).x - vec_role.at(i).x) != 1)
 					{
 						vec_role.at(i).move = "D";
 						break;
 					}
-					else if ((vec_role.at(k).y - vec_hinder.at(i).y) == 0)
+					else if ((vec_role.at(i).y - vec_hinder.at(k).y) != 1)
 					{
 						vec_role.at(i).move = "N";
 						break;
 					}
-					else if ((vec_role.at(k).x - vec_hinder.at(i).x) == 0)
+					else if ((vec_role.at(i).x - vec_hinder.at(k).x) != 1)
 					{
 						vec_role.at(i).move = "X";
 						break;
 					}
 				}
 				else if (rand_direction == 1) {
-					if ((vec_hinder.at(k).x - vec_role.at(i).x) == 0)
+					if ((vec_hinder.at(k).x - vec_role.at(i).x) != 1)
 					{
 						vec_role.at(i).move = "D";
 						break;
 					}
-					else if ((vec_role.at(k).y - vec_hinder.at(i).y) == 0)
+					else if ((vec_role.at(i).y - vec_hinder.at(k).y) != 1)
 					{
 						vec_role.at(i).move = "N";
 						break;
 					}
-					else if ((vec_role.at(k).x - vec_hinder.at(i).x) == 0)
+					else if ((vec_role.at(i).x - vec_hinder.at(k).x) != 1)
 					{
 						vec_role.at(i).move = "X";
 						break;
 					}
-					else if ((vec_hinder.at(k).y - vec_role.at(i).y) == 0)
+					else if ((vec_hinder.at(k).y - vec_role.at(i).y) != 1)
 					{
 						vec_role.at(i).move = "B";
 						break;
 					}
 				}
 				else if (rand_direction == 2) {
-					if ((vec_role.at(k).y - vec_hinder.at(i).y) == 0)
+					if ((vec_role.at(i).y - vec_hinder.at(k).y) != 1)
 					{
 						vec_role.at(i).move = "N";
 						break;
 					}
-					else if ((vec_role.at(k).x - vec_hinder.at(i).x) == 0)
+					else if ((vec_role.at(i).x - vec_hinder.at(k).x) != 1)
 					{
 						vec_role.at(i).move = "X";
 						break;
 					}
-					else if ((vec_hinder.at(k).y - vec_role.at(i).y) == 0)
+					else if ((vec_hinder.at(k).y - vec_role.at(i).y) != 1)
 					{
 						vec_role.at(i).move = "B";
 						break;
 					}
-					else if ((vec_hinder.at(k).x - vec_role.at(i).x) == 0)
+					else if ((vec_hinder.at(k).x - vec_role.at(i).x) != 1)
 					{
 						vec_role.at(i).move = "D";
 						break;
 					}
 				}
 				else if (rand_direction == 3) {
-					if ((vec_role.at(k).x - vec_hinder.at(i).x) == 0)
+					if ((vec_role.at(i).x - vec_hinder.at(k).x) != 1)
 					{
 						vec_role.at(i).move = "X";
 						break;
 					}
-					else if ((vec_hinder.at(k).y - vec_role.at(i).y) == 0)
+					else if ((vec_hinder.at(k).y - vec_role.at(i).y) != 1)
 					{
 						vec_role.at(i).move = "B";
 						break;
 					}
-					else if ((vec_hinder.at(k).x - vec_role.at(i).x) == 0)
+					else if ((vec_hinder.at(k).x - vec_role.at(i).x) != 1)
 					{
 						vec_role.at(i).move = "D";
 						break;
 					}
-					else if ((vec_role.at(k).y - vec_hinder.at(i).y) == 0)
+					else if ((vec_role.at(i).y - vec_hinder.at(k).y) != 1)
 					{
 						vec_role.at(i).move = "N";
 						break;
@@ -292,3 +303,134 @@ void normal_direction(vector<coordinate>& vec_role) {
 	}
 }
 
+void recv_messegeInf(char*s)
+{
+	char *p3, *p4, *p5, *p6, *p7, *p8;
+	if (myRole == "POL")//警察
+	{
+		clear();
+		int count = 0;
+		string tem, tem1;
+		tem = s;
+		tem1 = s;
+		p3 = new char[tem1.size() + 1];
+		strcpy(p3,tem1.c_str());
+		strtokCmd(p3, vec_temp, "<>");
+
+		strtokCmd(s, vec_string, "[]()<>");
+		count = vec_string.size();
+		nround = stoi(vec_string[1]);//轮数信息
+		strtokCmd(vec_string[2], vec_coordinate, ",;");
+		transCmd(vec_coordinate, vec_police);
+		vec_coordinate.clear();
+
+		if (count == 3)//没有障碍物，也没有小偷
+		{
+			;
+		}
+		if (count == 4)//小偷和障碍物只有一个
+		{
+			p4 = new char[tem.size() + 1];
+			strcpy(p4, tem.c_str());
+			p5 = strstr(p4, "<>");
+			if (p5 == NULL) //有小偷无障碍物
+			{
+				strtokCmd(vec_string[3], vec_coordinate, ",;");
+				transCmd(vec_coordinate, vec_thief);
+				vec_coordinate.clear();
+			}
+			else     //无小偷有障碍物
+			{
+				strtokCmd(vec_string[3], vec_hinderone, ";");
+				initial_hinder(vec_hinderone.size());
+				strtokCmd(vec_temp[1], vec_coordinate, "(,;)");
+				transHINDER(vec_coordinate, vec_hinder);
+				vec_coordinate.clear();
+			}
+		}
+		if (count == 5)
+		{
+			strtokCmd(vec_string[3], vec_coordinate, ",;");
+			transCmd(vec_coordinate, vec_thief);
+			vec_coordinate.clear();
+			strtokCmd(vec_string[4], vec_hinderone, ";");
+			initial_hinder(vec_hinderone.size());
+			strtokCmd(vec_temp[2], vec_coordinate, "(,;)");
+			transHINDER(vec_coordinate, vec_hinder);
+			vec_coordinate.clear();
+		}
+		delete[] p3, p4, p5;
+	}
+	if (myRole=="THI")//小偷
+	{
+		clear();
+		int count = 0;
+		string tem = s;
+		cout << tem;
+		strtokCmd(s, vec_string, "[]()<>");
+		nround = stoi(vec_string[1]);//轮数信息
+		p6=new char[tem.size()+1];
+		strcpy(p6, tem.c_str());
+		strtokCmd(p6, vec_temp, "<>");
+		count = vec_temp.size();
+		vec_coordinate.clear();
+		strtokCmd(vec_temp[1], vec_coordinate, ",;");
+		transCmd(vec_coordinate, vec_thief);
+		vec_coordinate.clear();
+		
+		//无障碍
+		//cout << vec_temp.at(0);
+		//cout << vec_temp.at(2);
+		p7 = strstr(vec_temp[0], "()");
+		p8 = strstr(vec_temp[2], "()");
+		if (p7 == NULL&&p8 == NULL) //有警察
+		{
+			strtokCmd(vec_string[2], vec_coordinate, ",;");
+			transCmd(vec_coordinate, vec_police);
+			vec_coordinate.clear();
+			strtokCmd(vec_string[4], vec_hinderone, ";");
+			initial_hinder(vec_hinderone.size());
+			strtokCmd(vec_temp[2], vec_coordinate, "(,;)");
+			transHINDER(vec_coordinate, vec_hinder);
+			vec_coordinate.clear();
+		}
+		if (p7 == NULL&&p8 != NULL)
+		{
+			strtokCmd(vec_string[2], vec_coordinate, ",;");
+			transCmd(vec_coordinate, vec_police);
+			vec_coordinate.clear();
+		}
+		if (p7 != NULL&&p8 == NULL)
+		{
+
+			strtokCmd(vec_string[3], vec_hinderone, ";");
+			initial_hinder(vec_hinderone.size());
+			strtokCmd(vec_temp[2], vec_coordinate, "(,;)");
+			transHINDER(vec_coordinate, vec_hinder);
+			vec_coordinate.clear();
+		}
+		else if (p7 != NULL&&p8 != NULL)
+		{
+			;
+		}
+		delete[] p6, p7, p8;
+	}
+	
+}
+
+void initial_hinder(int a)
+{
+	for (int i = 0; i<a; i++)
+	{
+		vec_hinder.push_back(b);
+	}
+}
+
+void transHINDER(vector<char*>& vecin, vector<bar>& vecout)
+{
+	for (int i = 0, j = 0; i<vecin.size(); i = i + 2, j++)
+	{
+		vecout.at(j).x = atoi(vecin.at(i));
+		vecout.at(j).y = atoi(vecin.at(i + 1));
+	}
+}
