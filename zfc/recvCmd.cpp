@@ -8,6 +8,7 @@ int map_x, map_y;//地图宽高
 int Qp, Qt;//警察和小偷数量
 int m, n;//视距
 int nround;//轮数
+int D=0, N=0, X=0, B=0;
 vector<char*> vec_string;//INI或INF指令第一次分割
 vector<char*> vec_map;//地图大小
 vector<char*> vec_eye;//视距
@@ -206,98 +207,27 @@ void clear()
 }
 
 void normal_direction(vector<coordinate>& vec_role) {
-	for (int i = 0; i < vec_role.size(); i++) {
-		int rand_direction = rand() % 4;
-		for (int k = 0; k < vec_hinder.size(); k++) {
-			while (true) {
-				if (rand_direction == 0) {
-					if ((vec_hinder.at(k).y - vec_role.at(i).y) != 1)
-					{
-						vec_role.at(i).move = "B";
-						break;
-					}
-					else if ((vec_hinder.at(k).x - vec_role.at(i).x) != 1)
-					{
-						vec_role.at(i).move = "D";
-						break;
-					}
-					else if ((vec_role.at(i).y - vec_hinder.at(k).y) != 1)
-					{
-						vec_role.at(i).move = "N";
-						break;
-					}
-					else if ((vec_role.at(i).x - vec_hinder.at(k).x) != 1)
-					{
-						vec_role.at(i).move = "X";
-						break;
-					}
-				}
-				else if (rand_direction == 1) {
-					if ((vec_hinder.at(k).x - vec_role.at(i).x) != 1)
-					{
-						vec_role.at(i).move = "D";
-						break;
-					}
-					else if ((vec_role.at(i).y - vec_hinder.at(k).y) != 1)
-					{
-						vec_role.at(i).move = "N";
-						break;
-					}
-					else if ((vec_role.at(i).x - vec_hinder.at(k).x) != 1)
-					{
-						vec_role.at(i).move = "X";
-						break;
-					}
-					else if ((vec_hinder.at(k).y - vec_role.at(i).y) != 1)
-					{
-						vec_role.at(i).move = "B";
-						break;
-					}
-				}
-				else if (rand_direction == 2) {
-					if ((vec_role.at(i).y - vec_hinder.at(k).y) != 1)
-					{
-						vec_role.at(i).move = "N";
-						break;
-					}
-					else if ((vec_role.at(i).x - vec_hinder.at(k).x) != 1)
-					{
-						vec_role.at(i).move = "X";
-						break;
-					}
-					else if ((vec_hinder.at(k).y - vec_role.at(i).y) != 1)
-					{
-						vec_role.at(i).move = "B";
-						break;
-					}
-					else if ((vec_hinder.at(k).x - vec_role.at(i).x) != 1)
-					{
-						vec_role.at(i).move = "D";
-						break;
-					}
-				}
-				else if (rand_direction == 3) {
-					if ((vec_role.at(i).x - vec_hinder.at(k).x) != 1)
-					{
-						vec_role.at(i).move = "X";
-						break;
-					}
-					else if ((vec_hinder.at(k).y - vec_role.at(i).y) != 1)
-					{
-						vec_role.at(i).move = "B";
-						break;
-					}
-					else if ((vec_hinder.at(k).x - vec_role.at(i).x) != 1)
-					{
-						vec_role.at(i).move = "D";
-						break;
-					}
-					else if ((vec_role.at(i).y - vec_hinder.at(k).y) != 1)
-					{
-						vec_role.at(i).move = "N";
-						break;
-					}
-				}
+	for (int i = 0; i < vec_role.size(); i++)
+	{
+		int randNum = rand() % 8;
+		D = 0, N = 0, X = 0, B = 0;
+		for (int k = 0; k < vec_hinder.size(); k++)
+		{
+			if ((vec_hinder.at(k).x - vec_role.at(i).x) == 1)
+			{
+				D = 1;
+			}
+			else if ((vec_hinder.at(k).y - vec_role.at(i).y) == 1)
+			{
+				B = 1;
+			}
+			else if ((vec_hinder.at(k).y - vec_role.at(i).y) == -1)
+			{
+				N = 1;
+			}
+			else if ((vec_hinder.at(k).x - vec_role.at(i).x) == -1)
+			{
+				X = 1;
 			}
 		}
 	}
